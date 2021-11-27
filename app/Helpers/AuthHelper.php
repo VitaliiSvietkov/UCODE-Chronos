@@ -139,7 +139,7 @@ class AuthHelper
             return $remember_claims;
         }
 
-        $user  = User::find($remember_claims['id']);
+        $user  = User::find($remember_claims['data']['id']);
         $token = $this->generateAccessToken($user, $key);
         $this->queueAT($token);
 

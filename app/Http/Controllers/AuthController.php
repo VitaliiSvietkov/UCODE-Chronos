@@ -25,16 +25,18 @@ class AuthController extends Controller
             'password',
         ]);
 
-        $validator = Validator::make($credentials, [
+        $validator   = Validator::make($credentials, [
             'email'     => 'required|unique:App\Models\User,email',
             'password'  => 'required|min:6|max:14',
         ]);
         if ($validator->fails()) {
-            return response($validator->errors()->toArray(), 400);
+            return response([
+                'message' => $validator->errors()->first()
+            ], 400);
         }
 
         $credentials['password'] = Hash::make($credentials['password']);
-        $user     = User::create($credentials);
+        $user                    = User::create($credentials);
 
         return response([
             'user'    => $user,
@@ -56,6 +58,12 @@ class AuthController extends Controller
             'email',
             'password',
         ]);
+
+        if (!count($credentials)) {
+            return response([
+                'message'  => 'Email or password is not correct'
+            ], 400);
+        }
 
         if (Auth::attempt($credentials, false)) {
             // Generate a unique key for the token creation
@@ -104,6 +112,8 @@ class AuthController extends Controller
 
     public function me(Request $request, AuthHelper $authHelper)
     {
-        return response($authHelper->user());
+        return response([
+            $authHelper->user()
+        ]);
     }
 }
