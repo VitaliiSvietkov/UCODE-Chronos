@@ -8,5 +8,6 @@
     <div class="d-flex flex-column p-0 container-fluid min-vh-100">
         <div id="header" class="row p-0 m-0"></div>
         <div id="CalendarSidebar" class="FuckingSidebar"></div>
+        <div id="Calendar" class="container-fluid pt-2"></div>
     </div>
 @endsection

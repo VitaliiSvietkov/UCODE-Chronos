@@ -32,6 +32,9 @@ class UserController extends Controller
     {
         $user = $this->authHelper->user();
         $ownCalendars = $user->ownCalendars()->get();
+        for ($i = 0; $i < count($ownCalendars); ++$i) {
+            $ownCalendars[$i]->owner = $ownCalendars[$i]->userOwner()->first();
+        }
         return response()->json($ownCalendars);
     }
 }

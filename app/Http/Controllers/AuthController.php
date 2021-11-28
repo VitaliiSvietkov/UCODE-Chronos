@@ -40,10 +40,12 @@ class AuthController extends Controller
         $user                    = User::create($credentials);
 
         $calendar                = Calendar::create([
-           'owner_id' => $user->id,
+            'owner_id' => $user->id,
+            'name'     => $user->email . '`s calendar',
         ]);
         $calendar                = Calendar::create([
             'owner_id' => $user->id,
+            'name'     => $user->email . '`s holiday calendar',
         ]);
 
         return response([

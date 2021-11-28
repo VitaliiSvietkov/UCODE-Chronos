@@ -16,13 +16,14 @@ class Calendar extends Model
      * @var string[]
      */
     protected $fillable = [
-        'owner_id'
+        'owner_id',
+        'name',
     ];
 
     /**
      * @return HasOne
      */
-    public function owner(): HasOne
+    public function userOwner(): HasOne
     {
         return $this->hasOne(User::class, 'id', 'owner_id');
     }

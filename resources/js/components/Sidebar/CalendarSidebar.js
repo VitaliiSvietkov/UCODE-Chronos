@@ -1,7 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import ReactDOM from 'react-dom';
-import CalendarButton from "./Sidebar/CalendarButtoon";
-import AddCalendarButton from "./Sidebar/AddCalendarButton";
+import CalendarButton from "./CalendarButtoon";
+import AddCalendarButton from "./AddCalendarButton";
+import Calendar from "../Calendar";
 
 function getConstructedCalendars(calendars, active, callback) {
     let result = [];
@@ -10,6 +11,7 @@ function getConstructedCalendars(calendars, active, callback) {
             key={i}
             index={i}
             active={i === active ? "active" : ''}
+            calendar={calendars[i]}
             callback={callback}
         />);
     }
@@ -28,7 +30,7 @@ function CalendarSidebar() {
         <AddCalendarButton key={1} />
     ]);
     const [activeCalendarId, setActiveCalendar] = useState(0);
-    const [calendarsData, setCalendarsData]       = useState([]);
+    const [calendarsData, setCalendarsData]     = useState([]);
 
     let selectCalendar = (index) => {
         setActiveCalendar(index);
@@ -42,6 +44,7 @@ function CalendarSidebar() {
             method: 'GET',
         });
         let result = await response.json();
+        ReactDOM.render(<Calendar calendar={result[0]} />, document.getElementById('Calendar'));
         setCalendars(getConstructedCalendars(result, activeCalendarId, selectCalendar));
         setCalendarsData(result);
     }, []);

@@ -3,7 +3,7 @@ import React from 'react';
 function AddCalendarButton(props) {
     return (
         <li className="nav-item" onClick={() => props.callback(props.index)}>
-            <a role="button" className={`nav-link ${props.active ?? ''} py-3 border-bottom`}>
+            <a role="button" className={`nav-link ${props.active ?? ''} py-3 border-bottom rounded-0`}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill={props.active ? 'currentColor' : "white"}
                      className="bi bi-calendar-plus" viewBox="0 0 16 16">
                     <path
