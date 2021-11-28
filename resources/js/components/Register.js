@@ -8,7 +8,7 @@ function Register() {
 
         let response = await fetch('/api/auth/register?' + $('#register').serialize(), {
             headers: {
-                'Access': 'application/json',
+                'Accept': 'application/json',
             },
             method: 'POST'
         });

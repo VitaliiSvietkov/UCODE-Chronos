@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -37,5 +38,18 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+    /**
+     * @param Throwable $e
+     * @throws Throwable
+     */
+    public function report(Throwable $e)
+    {
+        if ($e instanceof MethodNotAllowedHttpException) {
+            abort(404);
+        }
+
+        parent::report($e);
     }
 }

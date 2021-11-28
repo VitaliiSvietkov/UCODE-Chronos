@@ -20,10 +20,12 @@ async function logout() {
 }
 
 function Header() {
-    const [lastElement, setState] = useState(<div className="text-end col-12 col-lg-auto ml-auto">
-        <a type="button" href="/login" className="btn btn-outline-light me-2">Login</a>
-        <a type="button"href="/register" className="btn btn-warning ml-2">Sign-up</a>
-    </div>);
+    const [lastElement, setState] = useState(
+        <div className="text-end col-12 col-lg-auto ml-auto">
+            <a type="button" href="/login" className="btn btn-outline-light me-2">Login</a>
+            <a type="button"href="/register" className="btn btn-warning ml-2">Sign-up</a>
+        </div>
+    );
 
     useEffect(async () => {
         let response = await fetch('/api/auth/me', {
@@ -34,15 +36,17 @@ function Header() {
         });
         if (response.status === 200) {
             let userEntity = await response.json();
-            setState(<div className="text-end ml-auto">
-                <span className="text-light mr-1">{userEntity.email}</span>
-                <button className="btn btn-light" role="button" onClick={logout}>Logout</button>
-            </div>);
+            setState(
+                <div className="text-end ml-auto">
+                    <span className="text-light mr-1">{userEntity.email}</span>
+                    <button className="btn btn-light" role="button" onClick={logout}>Logout</button>
+                </div>
+            );
         }
     }, []);
 
     return (
-        <header className="p-3 bg-dark text-white">
+        <header className="p-3 bg-dark text-white col-12">
             <div className="container">
                 <div className="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
                     <a href="/" className="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none h2">Chronos</a>

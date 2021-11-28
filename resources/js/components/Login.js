@@ -8,7 +8,7 @@ function Login() {
 
         let response = await fetch('/api/auth/login?' + $('#login').serialize(), {
            headers: {
-               'Access': 'application/json',
+               'Accept': 'application/json',
            },
             method: 'POST'
         });
