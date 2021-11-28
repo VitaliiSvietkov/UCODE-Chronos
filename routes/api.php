@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,5 +21,9 @@ Route::middleware('auth.api')->group(function() {
         Route::post('/register', [AuthController::class, 'register']);
         Route::get('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
+    });
+
+    Route::prefix('user')->group(function () {
+        Route::get('/calendars', [UserController::class, 'calendars']);
     });
 });

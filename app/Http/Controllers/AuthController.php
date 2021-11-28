@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Calendar;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Helpers\AuthHelper;
@@ -37,6 +38,13 @@ class AuthController extends Controller
 
         $credentials['password'] = Hash::make($credentials['password']);
         $user                    = User::create($credentials);
+
+        $calendar                = Calendar::create([
+           'owner_id' => $user->id,
+        ]);
+        $calendar                = Calendar::create([
+            'owner_id' => $user->id,
+        ]);
 
         return response([
             'user'    => $user,
