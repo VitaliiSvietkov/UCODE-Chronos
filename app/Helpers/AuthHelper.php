@@ -5,6 +5,10 @@ namespace App\Helpers;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Cookie;
+use MiladRahimi\Jwt\Exceptions\JsonDecodingException;
+use MiladRahimi\Jwt\Exceptions\JsonEncodingException;
+use MiladRahimi\Jwt\Exceptions\SigningException;
+use MiladRahimi\Jwt\Exceptions\ValidationException;
 use MiladRahimi\Jwt\Generator;
 use MiladRahimi\Jwt\Parser;
 use MiladRahimi\Jwt\Cryptography\Algorithms\Hmac\HS256;
@@ -31,8 +35,8 @@ class AuthHelper
      * @param string $key
      * @return string
      * @throws InvalidKeyException
-     * @throws \MiladRahimi\Jwt\Exceptions\JsonEncodingException
-     * @throws \MiladRahimi\Jwt\Exceptions\SigningException
+     * @throws JsonEncodingException
+     * @throws SigningException
      */
     public function generateAccessToken(Authenticatable $user, string $key): string
     {
@@ -54,8 +58,8 @@ class AuthHelper
      * @param bool $remember
      * @return string
      * @throws InvalidKeyException
-     * @throws \MiladRahimi\Jwt\Exceptions\JsonEncodingException
-     * @throws \MiladRahimi\Jwt\Exceptions\SigningException
+     * @throws JsonEncodingException
+     * @throws SigningException
      */
     public function generateRememberToken(Authenticatable $user, string $key, bool $remember = false): string
     {
@@ -81,9 +85,9 @@ class AuthHelper
      * @param string $token
      * @param string $key
      * @return array
-     * @throws \MiladRahimi\Jwt\Exceptions\JsonDecodingException
-     * @throws \MiladRahimi\Jwt\Exceptions\SigningException
-     * @throws \MiladRahimi\Jwt\Exceptions\ValidationException
+     * @throws JsonDecodingException
+     * @throws SigningException
+     * @throws ValidationException
      */
     public function decodeToken(string $token, string $key): array
     {
@@ -105,7 +109,7 @@ class AuthHelper
                 return [
                     'status'  => 401,
                     'data'    => $claims,
-                    'message' => 'Session has already expired',
+                    'message' => 'Token has already expired',
                 ];
             }
 
@@ -127,10 +131,10 @@ class AuthHelper
      * @param string $key
      * @return array
      * @throws InvalidKeyException
-     * @throws \MiladRahimi\Jwt\Exceptions\JsonDecodingException
-     * @throws \MiladRahimi\Jwt\Exceptions\JsonEncodingException
-     * @throws \MiladRahimi\Jwt\Exceptions\SigningException
-     * @throws \MiladRahimi\Jwt\Exceptions\ValidationException
+     * @throws JsonDecodingException
+     * @throws JsonEncodingException
+     * @throws SigningException
+     * @throws ValidationException
      */
     public function resetAccessToken(Authenticatable $user, string $key): array
     {
@@ -198,10 +202,10 @@ class AuthHelper
     /**
      * @return null|User
      * @throws InvalidKeyException
-     * @throws \MiladRahimi\Jwt\Exceptions\JsonDecodingException
-     * @throws \MiladRahimi\Jwt\Exceptions\JsonEncodingException
-     * @throws \MiladRahimi\Jwt\Exceptions\SigningException
-     * @throws \MiladRahimi\Jwt\Exceptions\ValidationException
+     * @throws JsonDecodingException
+     * @throws JsonEncodingException
+     * @throws SigningException
+     * @throws ValidationException
      */
     public function user()
     {

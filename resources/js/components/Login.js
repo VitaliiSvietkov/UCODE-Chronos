@@ -20,7 +20,7 @@ function Login() {
                 title: result.message,
             });
         } else {
-            location.href = '/me';
+            location.href = '/';
         }
 
         return false;

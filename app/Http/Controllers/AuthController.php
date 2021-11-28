@@ -112,8 +112,11 @@ class AuthController extends Controller
 
     public function me(Request $request, AuthHelper $authHelper)
     {
-        return response([
-            $authHelper->user()
-        ]);
+        $user = $authHelper->user();
+        if (!$user) {
+            return response([], 401);
+        }
+
+        return response()->json($authHelper->user());
     }
 }
