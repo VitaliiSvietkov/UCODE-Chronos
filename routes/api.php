@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CalendarController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,5 +26,9 @@ Route::middleware('auth.api')->group(function() {
 
     Route::prefix('user')->group(function () {
         Route::get('/calendars', [UserController::class, 'calendars']);
+    });
+
+    Route::prefix('calendar')->group(function () {
+        Route::get('/{id}/share', [CalendarController::class, 'share']);
     });
 });

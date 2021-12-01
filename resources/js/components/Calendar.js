@@ -1,11 +1,52 @@
 import React from 'react';
+import Swal from "sweetalert2";
+
+function runShareCalendar(calendarId) {
+    Swal.fire({
+        title: 'Enter a user`s email',
+        input: 'email',
+        inputAttributes: {
+            autocapitalize: 'off'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Share access',
+        showLoaderOnConfirm: true,
+        preConfirm: (login) => {
+            return fetch(`/api/calendar/${calendarId}/share?email=${login}`, {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(response.statusText);
+                    }
+                    return response.json()
+                })
+                .catch(error => {
+                    Swal.showValidationMessage(
+                        `Request failed: ${error}`
+                    )
+                })
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire(
+                'Access granted successfully',
+                result.value.email,
+                'success'
+            )
+        }
+    })
+}
 
 function Calendar(props) {
     return (
         <>
             <div className={"row p-0 m-0"}>
                 <h2>{props.calendar.name}</h2>
-                <a className="ml-2 pt-1" role="button" onClick={}>
+                <a className="ml-2 pt-1" role="button" onClick={() => runShareCalendar(props.calendar.id)}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                          className="bi bi-share" viewBox="0 0 16 16">
                         <path

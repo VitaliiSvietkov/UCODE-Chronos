@@ -30,11 +30,15 @@ class UserController extends Controller
      */
     public function calendars(Request $request): JsonResponse
     {
-        $user = $this->authHelper->user();
-        $ownCalendars = $user->ownCalendars()->get();
-        for ($i = 0; $i < count($ownCalendars); ++$i) {
-            $ownCalendars[$i]->owner = $ownCalendars[$i]->userOwner()->first();
-        }
-        return response()->json($ownCalendars);
+        $user            = $this->authHelper->user();
+        $ownCalendars    = $user->ownCalendars()->get()->map(function ($element) {
+            $element->owner = $element->userOwner()->first();
+            return $element;
+        })->toArray();
+        $sharedCalendars = $user->sharedCalendars()->get()->map(function ($element) {
+            $element->owner = $element->userOwner()->first();
+            return $element;
+        })->toArray();
+        return response()->json(array_merge($ownCalendars, $sharedCalendars));
     }
 }
