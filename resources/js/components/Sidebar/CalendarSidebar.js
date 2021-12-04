@@ -15,19 +15,19 @@ function getConstructedCalendars(calendars, active, callback) {
             callback={callback}
         />);
     }
-    result.push(<AddCalendarButton
-        key={result.length}
-        index={result.length}
-        active={result.length === active ? "active" : ""}
-        callback={callback}
-    />);
+    // result.push(<AddCalendarButton
+    //     key={result.length}
+    //     index={result.length}
+    //     active={result.length === active ? "active" : ""}
+    //     callback={callback}
+    // />);
     return result;
 }
 
 function CalendarSidebar() {
     const [calendars, setCalendars] = useState([
         <CalendarButton key={0} active={"active"} />,
-        <AddCalendarButton key={1} />
+        // <AddCalendarButton key={1} />
     ]);
     const [activeCalendarId, setActiveCalendar] = useState(0);
     const [calendarsData, setCalendarsData]     = useState([]);
@@ -36,17 +36,18 @@ function CalendarSidebar() {
         setActiveCalendar(index);
     }
 
-    useEffect(async () => {
-        let response = await fetch('/api/user/calendars', {
+    useEffect(() => {
+        fetch('/api/user/calendars', {
             headers: {
                 'Accept': 'application/json',
             },
             method: 'GET',
+        }).then(async (response) => {
+            let result = await response.json();
+            ReactDOM.render(<Calendar calendar={result[0]} />, document.getElementById('Calendar'));
+            setCalendars(getConstructedCalendars(result, activeCalendarId, selectCalendar));
+            setCalendarsData(result);
         });
-        let result = await response.json();
-        ReactDOM.render(<Calendar calendar={result[0]} />, document.getElementById('Calendar'));
-        setCalendars(getConstructedCalendars(result, activeCalendarId, selectCalendar));
-        setCalendarsData(result);
     }, []);
 
     useEffect(() => {

@@ -5,6 +5,8 @@ import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin!
 import interactionPlugin from "@fullcalendar/interaction" // needed for dayClick
 let holidays = require('date-holidays');
 
+import { TimepickerUI } from "timepicker-ui";
+
 let calendar = {};
 
 function runShareCalendar(calendarId) {
@@ -45,6 +47,38 @@ function runShareCalendar(calendarId) {
             )
         }
     })
+}
+
+function runEventCreate(info) {
+    Swal.fire({
+        title: 'Create an event for ' + info.dateStr,
+        html:
+            '<div id="id1" class="version-24h mb-2" >\n' +
+            '<input id="starttime" type="text" class="swal2-input timepicker-ui-input" placeholder="Start time"/>\n'+
+            '</div>\n' +
+            '<div id="id2" class="version-24h mb-2" >\n' +
+            '<input id="endtime" type="text" class="swal2-input timepicker-ui-input" placeholder="End time"/>\n'+
+            '</div>',
+        focusConfirm: false,
+        didRender(popup) {
+            const version24H1 = document.querySelector("#id1");
+            const version24H1Picker = new TimepickerUI(version24H1);
+            version24H1Picker.create();
+            const version24H2 = document.querySelector("#id2");
+            const version24H2Picker = new TimepickerUI(version24H2);
+            version24H2Picker.create();
+        },
+        preConfirm: () => {
+            return [
+                document.getElementById('starttime').value,
+                document.getElementById('endtime').value
+            ]
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire(JSON.stringify(result.value))
+        }
+    });
 }
 
 function loadHolidays(calendar, years) {
@@ -97,7 +131,8 @@ function Calendar(props) {
                         setYear(startYear - 1);
                     }
                 }
-            }
+            },
+            dateClick: runEventCreate,
         });
         if (props.calendar.has_holidays) {
             loadHolidays(calendar, years);
@@ -106,7 +141,7 @@ function Calendar(props) {
     }, []);
 
     useEffect(() => {
-        if (props.calendar.has_holidays) {
+        if (props.calendar.has_holidays && !years.includes(year)) {
             loadHolidays(calendar, [year]);
         }
     }, [year]);
