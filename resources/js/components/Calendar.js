@@ -76,7 +76,12 @@ function runEventCreate(info) {
         }
     }).then((result) => {
         if (result.isConfirmed) {
-            Swal.fire(JSON.stringify(result.value))
+            console.log((new Date(result.value[0] + ' ' + info.date.getFullYear())));
+            calendar.addEventSource({
+               title: "test",
+               start: (new Date(result.value[0] + ' ' + info.date.getFullYear())),
+                color: 'blue',
+            });
         }
     });
 }
