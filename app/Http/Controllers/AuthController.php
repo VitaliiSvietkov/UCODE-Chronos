@@ -39,13 +39,15 @@ class AuthController extends Controller
         $credentials['password'] = Hash::make($credentials['password']);
         $user                    = User::create($credentials);
 
-        $calendar                = Calendar::create([
-            'owner_id' => $user->id,
-            'name'     => $user->email . '`s calendar',
+        Calendar::create([
+            'owner_id'     => $user->id,
+            'name'         => $user->email . '`s calendar',
+            'has_holidays' => 0,
         ]);
-        $calendar                = Calendar::create([
-            'owner_id' => $user->id,
-            'name'     => $user->email . '`s holiday calendar',
+        Calendar::create([
+            'owner_id'     => $user->id,
+            'name'         => $user->email . '`s holiday calendar',
+            'has_holidays' => 1,
         ]);
 
         return response([

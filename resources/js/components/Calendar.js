@@ -1,5 +1,11 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import Swal from "sweetalert2";
+import { Calendar as npmCalendar } from '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin!
+import interactionPlugin from "@fullcalendar/interaction" // needed for dayClick
+let holidays = require('date-holidays');
+
+let calendar = {};
 
 function runShareCalendar(calendarId) {
     Swal.fire({
@@ -41,7 +47,70 @@ function runShareCalendar(calendarId) {
     })
 }
 
+function loadHolidays(calendar, years) {
+    fetch('https://api.geoapify.com/v1/ipinfo?apiKey=d5c61eec09cb4359b940aeb8b6ada5e6', {
+        method: 'GET'
+    })
+        .then(function(response) { return response.json(); })
+        .then(function(json) {
+            let hds = [];
+            let hd  = new holidays(json.country.iso_code);
+
+            for (let i = 0; i < years.length; ++i) {
+                hds.push(hd.getHolidays(years[i]));
+            }
+            let events = [];
+            for (let i = 0; i < years.length; ++i) {
+                for (let j = 0; j < hds[i].length; ++j) {
+                    events.push({
+                        title: hds[i][j].name,
+                        start: hds[i][j].date,
+                        color: 'orange'
+                    });
+                }
+            }
+            calendar.addEventSource(events);
+        });
+}
+
 function Calendar(props) {
+    let currentYear       = (new Date()).getFullYear();
+    let years             = [currentYear - 1, currentYear, currentYear + 1];
+    const [year, setYear] = useState(currentYear);
+
+    useEffect(() => {
+        calendar = new npmCalendar(document.getElementById('CalendarTable'), {
+            plugins: [ dayGridPlugin, interactionPlugin ],
+            initialView: 'dayGridMonth',
+            height: '100%',
+            datesSet: (dateInfo) => {
+                let startYear = dateInfo.start.getFullYear();
+                let endYear   = dateInfo.end.getFullYear();
+
+                if (startYear === endYear) {
+                    if (!years.includes(endYear + 1)) {
+                        years.push(endYear + 1);
+                        setYear(endYear + 1);
+                    }
+                    if (!years.includes(startYear - 1)) {
+                        year.push(startYear - 1);
+                        setYear(startYear - 1);
+                    }
+                }
+            }
+        });
+        if (props.calendar.has_holidays) {
+            loadHolidays(calendar, years);
+        }
+        calendar.render();
+    }, []);
+
+    useEffect(() => {
+        if (props.calendar.has_holidays) {
+            loadHolidays(calendar, [year]);
+        }
+    }, [year]);
+
     return (
         <>
             <div className={"row p-0 m-0"}>
@@ -55,6 +124,7 @@ function Calendar(props) {
                 </a>
             </div>
             <h4 className="font-italic">{'owner: ' + props.calendar.owner.email}</h4>
+            <div id="CalendarTable" className="h-100"></div>
         </>
     );
 }

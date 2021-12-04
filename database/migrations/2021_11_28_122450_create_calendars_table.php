@@ -17,6 +17,7 @@ class CreateCalendarsTable extends Migration
             $table->id();
             $table->string('name', 255);
             $table->foreignId('owner_id')->constrained('users')->onDelete('cascade');
+            $table->smallInteger('has_holidays')->unsigned();
             $table->timestamps();
         });
     }
