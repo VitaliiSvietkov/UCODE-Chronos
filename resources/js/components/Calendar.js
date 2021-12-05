@@ -53,7 +53,8 @@ function runEventCreate(info) {
     Swal.fire({
         title: 'Create an event for ' + info.dateStr,
         html:
-            '<div id="id1" class="version-24h mb-2" >\n' +
+            '<input id="eventTitle" type="text" class="swal2-input" placeholder="Title" />\n' +
+            '<div id="id1" class="version-24h" >\n' +
             '<input id="starttime" type="text" class="swal2-input timepicker-ui-input" placeholder="Start time"/>\n'+
             '</div>\n' +
             '<div id="id2" class="version-24h mb-2" >\n' +
@@ -70,20 +71,55 @@ function runEventCreate(info) {
         },
         preConfirm: () => {
             return [
-                document.getElementById('starttime').value,
-                document.getElementById('endtime').value
+                (new Date(document.getElementById('starttime').value + ' ' + (info.date.getMonth() + 1) + '-' + info.date.getDate() + '-' + info.date.getFullYear())),
+                (new Date(document.getElementById('endtime').value + ' ' + (info.date.getMonth() + 1) + '-' + info.date.getDate() + '-' + info.date.getFullYear())),
+                document.getElementById('eventTitle').value,
             ]
         }
     }).then((result) => {
         if (result.isConfirmed) {
-            console.log((new Date(result.value[0] + ' ' + info.date.getFullYear())));
-            calendar.addEventSource({
-               title: "test",
-               start: (new Date(result.value[0] + ' ' + info.date.getFullYear())),
+            calendar.addEventSource([{
+                title: result.value[2],
+                start: result.value[0],
+                end: result.value[1],
                 color: 'blue',
+            }]);
+            fetch('/api/calendar/' + calendar.id + '/event', {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                method: 'POST',
+                body: JSON.stringify({
+                    start: result.value[0].toString(),
+                    end:   result.value[1].toString(),
+                    title: result.value[2],
+                })
             });
         }
     });
+}
+
+function loadEvents(calendar) {
+    fetch('/api/calendar/' + calendar.id + '/events', {
+        headers: {
+            'Accept': 'application/json',
+        },
+        method: 'GET',
+    }).then(async (response) => {
+        let result = await response.json();
+        let events = [];
+        for (let i = 0; i < result.length; ++i) {
+            let element = result[i];
+            events.push({
+                'title': element.title,
+                'start': new Date(element.start),
+                'end': new Date(element.end),
+                'color': element.color,
+            });
+        }
+        calendar.addEventSource(events);
+    })
 }
 
 function loadHolidays(calendar, years) {
@@ -139,6 +175,8 @@ function Calendar(props) {
             },
             dateClick: runEventCreate,
         });
+        calendar.id = props.calendar.id;
+        loadEvents(calendar);
         if (props.calendar.has_holidays) {
             loadHolidays(calendar, years);
         }

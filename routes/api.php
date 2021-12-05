@@ -30,5 +30,7 @@ Route::middleware('auth.api')->group(function() {
 
     Route::prefix('calendar')->group(function () {
         Route::get('/{id}/share', [CalendarController::class, 'share']);
+        Route::middleware('auth')->post('/{id}/event', [CalendarController::class, 'createEvent']);
+        Route::middleware('auth')->get('/{id}/events', [CalendarController::class, 'getEvents']);
     });
 });

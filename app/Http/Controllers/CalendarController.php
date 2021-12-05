@@ -2,67 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\AuthHelper;
 use App\Models\Calendar;
 use App\Models\CalendarAccess;
 use App\Models\User;
+use App\Models\Event;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Date;
 
 class CalendarController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @var AuthHelper
      */
-    public function index()
-    {
-        //
-    }
+    private AuthHelper $auth;
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * CalendarController constructor.
+     * @param AuthHelper $auth
      */
-    public function store(Request $request)
+    public function __construct(AuthHelper $auth)
     {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        $this->auth = $auth;
     }
 
     /**
@@ -97,5 +59,47 @@ class CalendarController extends Controller
         return response()->json([
             'message' => 'Success!'
         ]);
+    }
+
+    /**
+     * @param Request $request
+     * @param $id
+     * @return JsonResponse
+     * @throws \MiladRahimi\Jwt\Exceptions\InvalidKeyException
+     * @throws \MiladRahimi\Jwt\Exceptions\JsonDecodingException
+     * @throws \MiladRahimi\Jwt\Exceptions\JsonEncodingException
+     * @throws \MiladRahimi\Jwt\Exceptions\SigningException
+     * @throws \MiladRahimi\Jwt\Exceptions\ValidationException
+     */
+    public function createEvent(Request $request, $id): JsonResponse
+    {
+        $calendar = Calendar::find($id);
+        if (!$calendar) {
+            return response()->json([], 404);
+        }
+
+        $event = Event::create([
+            'title'       => $request->input('title'),
+            'start'       => $request->input('start'),
+            'end'         => $request->input('end'),
+            'author_id'   => $this->auth->user()->id,
+            'calendar_id' => $calendar->id,
+        ]);
+
+        return response()->json($event);
+    }
+
+    /**
+     * @param $id
+     * @return JsonResponse
+     */
+    public function getEvents($id): JsonResponse
+    {
+        $calendar = Calendar::find($id);
+        if (!$calendar) {
+            return response()->json([], 404);
+        }
+
+        return response()->json(Event::where('calendar_id', $id)->get());
     }
 }
